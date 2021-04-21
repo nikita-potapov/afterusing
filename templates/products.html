@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="my_container">
+        <div class="article_name">
+            <h1>{{title}}</h1>
+        </div>
+        <div class="products_container">
+            {% for product in products %}
+            <div class="product_container">
+                <div class="product_table">
+
+                </div>
+                {% if current_user.is_authenticated and current_user.id == product.user_id %}
+                    <div>
+                        <a href="/edit_product/{{ product.id }}" class="btn btn-warning">
+                            Изменить
+                        </a>
+                        <a href="/delete_product/{{ product.id }}" class="btn btn-danger">
+                            Удалить
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
