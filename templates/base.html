@@ -21,50 +21,68 @@
           integrity="sha512-P5MgMn1jBN01asBgU0z60Qk4QxiXo86+wlFahKrsQf37c9cro517WzVSPPV1tDKzhku2iJ2FVgL67wG03SGnNA=="
           crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="static/css/style.css">
+    <title>{{ title }}</title>
 </head>
 
 <body>
 
-<header>
-    <!-- Fixed navbar -->
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="#">Fixed navbar</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse"
-                data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false"
-                aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#">Disabled</a>
-                </li>
-            </ul>
-            <form class="form-inline mt-2 mt-md-0">
-                <input class="form-control mr-sm-2" type="text" placeholder="Search"
-                       aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
+    <header>
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+
+            <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarCollapse">
+                <div class="nav-item">
+                    <a class="navbar-brand" href="/">Afterusing</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <div class="nav-item">
+                    <form class="form-inline mt-2 mt-md-0">
+                        <input class="form-control mr-sm-2" type="text" placeholder="Search"
+                               aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+
+                <div class="nav-item">
+                    {% if current_user.is_authenticated %}
+                    <div class="dropdown">
+                      <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ current_user.name }}
+                      </a>
+
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="/my_profile">Профиль</a>
+                        <a class="dropdown-item" href="/my_products">Объявления</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/logout">Выйти</a>
+                      </div>
+                    </div>
+                    {% else %}
+                    <div class="d-flex">
+                        <a class="btn btn-outline-secondary my-2 my-sm-0" href="/register">Зарегистрироваться</a>
+                        <a class="btn btn-outline-secondary my-2 my-sm-0" href="/login">Войти</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </nav>
+    </header>
+
+    <main role="main" class="container">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <span class="text-muted">©2020-2021, Потапов Никита, Afterusing, Яндекс.лицей, г.Ульяновск, учебный проект </span>
         </div>
-    </nav>
-</header>
-
-<!-- Begin page content -->
-<main role="main" class="container">
-    {% block content %}
-    {% endblock %}
-</main>
-
-<footer class="footer">
-    <div class="container">
-        <span class="text-muted">Place sticky footer content here.</span>
-    </div>
-</footer>
+    </footer>
 </body>
 </html>

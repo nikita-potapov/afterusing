@@ -179,7 +179,10 @@ def load_user(user_id):
 
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'message': 'Not found'}), 404)
+    params = {
+        'title': 'Oops! Page not found...'
+    }
+    return render_template('404_error.html', **params)
 
 
 if __name__ == '__main__':
