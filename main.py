@@ -68,7 +68,8 @@ def add_product():
             title=form.title.data,
             content=form.content.data,
             created_date=datetime.datetime.now(),
-            path_to_img=product_img_path
+            path_to_img=product_img_path,
+            contact_number=form.contact_number.data
         )
         db_sess.add(product)
         db_sess.commit()
@@ -122,6 +123,20 @@ def delete_product(id):
         db_sess.commit()
     else:
         abort(403)
+    return redirect('/')
+
+
+@app.route('/product_details/<int:id>', methods=['GET', 'POST'])
+def product_details(id):
+    db_sess = db_session.create_session()
+    product = db_sess.query(Product).filter(Product.id == id).first()
+    if product:
+        params = {
+            'title': product.title
+        }
+        render_template('product_details.html', **params)
+    else:
+        abort(404)
     return redirect('/')
 
 
@@ -183,6 +198,11 @@ def not_found(error):
         'title': 'Oops! Page not found...'
     }
     return render_template('404_error.html', **params)
+
+
+@app.errorhandler(401)
+def not_authenticated(error):
+    return redirect('/login')
 
 
 if __name__ == '__main__':

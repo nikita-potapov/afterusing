@@ -15,9 +15,10 @@ class Product(SqlAlchemyBase, SerializerMixin):
 
     path_to_img = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
-    cost = sqlalchemy.Column(sqlalchemy.Float, nullable=True)
+    cost = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=True, index=True)
     content = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    contact_number = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime)
 
     def __repr__(self):
