@@ -1,3 +1,8 @@
+import datetime
+
+import hashlib
+import os
+
 from flask import Flask, redirect, render_template, request, abort, make_response, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_restful import Api
@@ -7,6 +12,8 @@ from data.products import Product
 from data.users import User
 from forms.product import AddProductForm
 from forms.user import RegisterForm, LoginForm
+
+from settings import *
 
 app = Flask(__name__)
 api = Api(app)
@@ -22,7 +29,7 @@ def main():
 
 
 @app.route('/', methods=['GET', 'POST'])
-def mainpage():
+def main_page():
     if request.method == 'GET':
         db_sess = db_session.create_session()
         products = db_sess.query(Product).all()
@@ -40,12 +47,28 @@ def mainpage():
 def add_product():
     form = AddProductForm()
     if form.validate_on_submit():
+
+        if form.image.data:
+            img_container = request.files['image']
+            filename = img_container.filename
+            saved_date_time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+            end_of_filename = '_'.join([saved_date_time, str(filename)])
+            hashing_str = str(current_user.id) + end_of_filename
+            temp = hashlib.sha1(hashing_str.encode('utf-8')).hexdigest() + '_' + end_of_filename
+            product_img_path = os.path.join(PRODUCT_IMG_PATH, temp)
+
+            img_container.save(product_img_path)
+        else:
+            product_img_path = os.path.join(PRODUCT_IMG_PATH, 'net-photo.png')
+
         db_sess = db_session.create_session()
         product = Product(
             user_id=current_user.id,
             cost=form.cost.data,
             title=form.title.data,
-            content=form.content.data
+            content=form.content.data,
+            created_date=datetime.datetime.now(),
+            path_to_img=product_img_path
         )
         db_sess.add(product)
         db_sess.commit()

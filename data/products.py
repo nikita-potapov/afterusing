@@ -18,6 +18,7 @@ class Product(SqlAlchemyBase, SerializerMixin):
     cost = sqlalchemy.Column(sqlalchemy.Float, nullable=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=True, index=True)
     content = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    created_date = sqlalchemy.Column(sqlalchemy.DateTime)
 
     def __repr__(self):
-        return f"<Product> {self.id}"
+        return f"<Product> {self.id} created {self.created_date}"
