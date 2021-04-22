@@ -19,6 +19,8 @@ body {
 }
 
 img {
+    display: block;
+    margin: 5px;
     max-width: 100%;
     height: auto;
 }
@@ -34,4 +36,14 @@ body > .container {
 
 code {
   font-size: 80%;
+}
+
+.product-container {
+    margin: 5px;
+    border: 1px solid;
+    border-radius: 5px;
+}
+
+.product-content {
+    word-break: break-word;
 }

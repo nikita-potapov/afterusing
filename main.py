@@ -25,8 +25,8 @@ login_manager.init_app(app)
 
 def main():
     db_session.global_init('db/database.db')
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    port = int(os.environ.get("PORT", 80))
+    app.run(host='localhost', port=port)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -89,7 +89,10 @@ def edit_jobs(id):
         product = db_sess.query(Product).filter(Product.id == id,
                                                 Product.user_id == current_user.id).first()
         if product:
-            form.team_leader.data = product.team_leader
+            form.cost.data = product.cost,
+            form.title.data = product.title,
+            form.content.data = product.content,
+            form.contact_number.data = product.contact_number
 
         else:
             abort(404)
@@ -101,7 +104,17 @@ def edit_jobs(id):
             product.cost = form.cost.data
             product.title = form.title.data
             product.content = form.content.data
-            product.image = form.image.data
+            if form.image.data:
+                img_container = request.files['image']
+                filename = img_container.filename
+                saved_date_time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+                end_of_filename = '_'.join([saved_date_time, str(filename)])
+                hashing_str = str(current_user.id) + end_of_filename
+                temp = hashlib.sha1(hashing_str.encode('utf-8')).hexdigest() + '_' + end_of_filename
+                product_img_path = os.path.join(PRODUCT_IMG_PATH, temp)
+                img_container.save(product_img_path)
+
+            product.created_date = datetime.datetime.now()
 
             db_sess.commit()
             return redirect('/')
@@ -139,6 +152,21 @@ def product_details(id):
     else:
         abort(404)
     return redirect('/')
+
+
+@app.route('/my_products', methods=['GET', 'POST'])
+def my_products():
+    db_sess = db_session.create_session()
+    products = db_sess.query(Product).filter(Product.user_id == current_user.id).all()
+    print(products)
+    if products:
+        params = {
+            'products': products
+        }
+        return render_template('my_products.html', **params)
+    else:
+        return abort(404)
+
 
 
 @app.route('/register', methods=['GET', 'POST'])
