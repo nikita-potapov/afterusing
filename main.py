@@ -25,7 +25,8 @@ login_manager.init_app(app)
 
 def main():
     db_session.global_init('db/database.db')
-    app.run(port=80, host='127.0.0.1')
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
 
 
 @app.route('/', methods=['GET', 'POST'])
