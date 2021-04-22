@@ -7,47 +7,48 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/css/style.css">
     <title>{{title}}</title>
 </head>
 <body>
+
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <div class="container-fluid">
-            <a class="navbar-brand" href="/">Afterusing</a>
+          <a class="navbar-brand" href="#">Afterusing</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
 
-            <div class="nav-item">
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit" name="search_phrase">Найти</button>
-                </form>
-            </div>
-
-
-            <div class="nav-item">
-                {% if current_user.is_authenticated%}
-                <div class="d-flex">
-                <a class="nav-link" aria-current="page" href="/profile">Мой профиль</a>
-                <a href="/logout" class="btn btn-outline-danger" role="button" data-bs-toggle="button">Выйти</a>
+          <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarSupportedContent">
+                <div class="nav-item">
+                    <form class="form-inline my-2 my-lg-0">
+                      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
                 </div>
-                {% else %}
-                <a href="/login" class="btn btn-outline-secondary" role="button" data-bs-toggle="button">Войти</a>
-                <a href="/register" class="btn btn-outline-secondary" role="button" data-bs-toggle="button">Зарегистрироваться</a>
-                {% endif %}
-            </div>
-
+                <div class="nav-item dropdown">
+                    <a class="nav-item btn btn- dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Dropdown
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="#">Action</a>
+                      <a class="dropdown-item" href="#">Another action</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </div>
           </div>
         </nav>
     </header>
+
     <main role="main" class="container">
         {% block content %}
         {% endblock %}
     </main>
-    <footer class="footer">
-        <div class="container">
-            <span class="text-muted">2020-2021 Яндекс.лицей Ульяновск</span>
-        </div>
+
+    <footer>
+
     </footer>
+
 </body>
 </html>
