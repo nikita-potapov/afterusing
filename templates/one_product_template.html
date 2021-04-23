@@ -2,7 +2,7 @@
 <div class="product-container d-flex align-items-center d-flex justify-content-center col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12">
     <div class="single-product">
         <div class="product-img d-flex justify-content-center">
-            <a href="/product_details/{{ product.id }}">
+            <a href="/product_details/{{ product.id }}" onerror="this.src = '/static/img/product_imgs/net-photo.png'">
                 <img class="default-img" src="{{ product.path_to_img }}" alt="фотография">
             </a>
         </div>

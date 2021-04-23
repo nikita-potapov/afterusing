@@ -3,6 +3,8 @@ import datetime
 import hashlib
 import os
 
+from PIL import Image
+
 from flask import Flask, redirect, render_template, request, abort, make_response, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_restful import Api
@@ -42,6 +44,9 @@ def main_page():
             products = db_sess.query(Product).all()
 
         products = sorted(products, key=lambda x: x.created_date, reverse=True)
+        for i in range(len(products)):
+            if products[i].path_to_img is None:
+                products[i].path_to_img = os.path.join(PRODUCT_IMG_PATH, 'no_photo.png')
         params = {
             'title': 'Все объявления',
             'products': products,
@@ -67,8 +72,10 @@ def add_product():
             product_img_path = os.path.join(PRODUCT_IMG_PATH, temp)
 
             img_container.save(product_img_path)
+            picture = Image.open(product_img_path)
+            picture.save(product_img_path, optimize=True, quality=30)
         else:
-            product_img_path = os.path.join(PRODUCT_IMG_PATH, 'net-photo.png')
+            product_img_path = None
 
         db_sess = db_session.create_session()
         product = Product(
@@ -122,6 +129,8 @@ def edit_product(id):
                 temp = hashlib.sha1(hashing_str.encode('utf-8')).hexdigest() + '_' + end_of_filename
                 product_img_path = os.path.join(PRODUCT_IMG_PATH, temp)
                 img_container.save(product_img_path)
+                picture = Image.open(product_img_path)
+                picture.save(product_img_path, optimize=True, quality=10)
 
             product.created_date = datetime.datetime.now()
 
@@ -143,6 +152,11 @@ def delete_product(id):
     product = db_sess.query(Product).filter(Product.id == id,
                                             Product.user_id == current_user.id).first()
     if product:
+        if product.path_to_img:
+            try:
+                os.remove(product.path_to_img)
+            except Exception:
+                pass
         db_sess.delete(product)
         db_sess.commit()
     else:
@@ -164,6 +178,7 @@ def product_details(id):
 
 
 @app.route('/my_products', methods=['GET', 'POST'])
+@login_required
 def my_products():
     db_sess = db_session.create_session()
     search_phrase = request.args.get('q')
@@ -176,6 +191,9 @@ def my_products():
     else:
         products = db_sess.query(Product).filter(Product.user_id == current_user.id).all()
     products = sorted(products, key=lambda x: x.created_date, reverse=True)
+    for i in range(len(products)):
+        if products[i].path_to_img is None:
+            products[i].path_to_img = os.path.join(PRODUCT_IMG_PATH, 'no_photo.png')
     params = {
         'title': 'Мои объявления',
         'can_edit': True
