@@ -42,12 +42,15 @@ code {
     margin: 5px;
     border: 1px solid;
     border-radius: 5px;
+
 }
 
 .product-content {
+    bottom: 0;
     word-break: break-word;
 }
 
 .default-img {
+    max-height: 25vh;
     object-fit: cover;
 }

@@ -1,5 +1,5 @@
 {% block one_product %}
-<div class="product-container col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12">
+<div class="product-container d-flex align-items-center d-flex justify-content-center col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12">
     <div class="single-product">
         <div class="product-img d-flex justify-content-center">
             <a href="/product_details/{{ product.id }}">
@@ -7,9 +7,9 @@
             </a>
         </div>
         <div class="product-content">
-            <h3><a href="/product_details/{{ product.id }}">{{ product.title }}</a></h3>
-            <div class="product-price">
-                <span>{{ product.cost }}</span>
+            <h3 class="d-flex justify-content-center"><a href="/product_details/{{ product.id }}">{{ product.title }}</a></h3>
+            <div class="product-price d-flex justify-content-center">
+                <span>{{ product.cost }} руб.</span>
             </div>
         </div>
         {% if product.user_id == current_user.id and can_edit %}
