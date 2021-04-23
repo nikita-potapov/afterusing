@@ -170,7 +170,8 @@ def product_details(id):
     product = db_sess.query(Product).filter(Product.id == id).first()
     if product:
         params = {
-            'title': product.title
+            'title': product.title,
+            'product': product
         }
         return render_template('product_details.html', **params)
     else:

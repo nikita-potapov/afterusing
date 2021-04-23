@@ -4,11 +4,6 @@
     <div class="collapse navbar-collapse d-flex justify-content-between" id="navbarCollapse">
         <div class="nav-item">
             <a class="navbar-brand" href="/">Afterusing</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse"
-                    data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
         </div>
 
         <div class="nav-item">
@@ -22,15 +17,13 @@
         <div class="nav-item">
             <div class="d-flex">
                 <a class="btn btn-outline-warning my-2 my-sm-0" style="margin-right: 10px;" href="/add_product">Разместить объявление</a>
-
                 {% if current_user.is_authenticated %}
                 <div class="dropdown">
                   <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     {{ current_user.name }}
                   </a>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <a class="dropdown-item" href="/my_profile">Профиль</a>
-                    <a class="dropdown-item" href="/my_products">Объявления</a>
+                    <a class="dropdown-item" href="/my_products">Мои объявления</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="/logout">Выйти</a>
                   </div>
