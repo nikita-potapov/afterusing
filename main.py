@@ -33,7 +33,13 @@ def main():
 def main_page():
     if request.method == 'GET':
         db_sess = db_session.create_session()
-        products = db_sess.query(Product).all()
+        search_phrase = request.args.get('q')
+        if search_phrase:
+            products = db_sess.query(Product).filter(
+                (Product.title.contains(search_phrase)) | (
+                    Product.content.contains(search_phrase))).all()
+        else:
+            products = db_sess.query(Product).all()
         params = {
             'title': 'Все объявления',
             'products': products
@@ -166,7 +172,6 @@ def my_products():
         return render_template('my_products.html', **params)
     else:
         return abort(404)
-
 
 
 @app.route('/register', methods=['GET', 'POST'])
