@@ -36,15 +36,15 @@ def main_page():
         search_phrase = request.args.get('q')
         if search_phrase:
             products = db_sess.query(Product).filter(
-                (Product.title.contains(search_phrase)) | (
-                    Product.content.contains(search_phrase))).all()
+                (Product.low_title.contains(search_phrase)) | (
+                    Product.low_content.contains(search_phrase))).all()
         else:
             products = db_sess.query(Product).all()
 
         products = sorted(products, key=lambda x: x.created_date, reverse=True)
         params = {
             'title': 'Все объявления',
-            'products': products
+            'products': products,
         }
         return render_template('index.html', **params)
     elif request.method == 'POST':
@@ -80,6 +80,7 @@ def add_product():
             path_to_img=product_img_path,
             contact_number=form.contact_number.data
         )
+        product.reinitialized_indexes()
         db_sess.add(product)
         db_sess.commit()
         return redirect('/')
@@ -90,7 +91,7 @@ def add_product():
 
 @app.route('/edit_product/<int:id>', methods=['GET', 'POST'])
 @login_required
-def edit_jobs(id):
+def edit_product(id):
     form = AddProductForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
@@ -124,6 +125,7 @@ def edit_jobs(id):
 
             product.created_date = datetime.datetime.now()
 
+            product.reinitialized_indexes()
             db_sess.commit()
             return redirect('/')
         else:
@@ -156,20 +158,31 @@ def product_details(id):
         params = {
             'title': product.title
         }
-        render_template('product_details.html', **params)
+        return render_template('product_details.html', **params)
     else:
-        abort(404)
-    return redirect('/')
+        return abort(404)
 
 
 @app.route('/my_products', methods=['GET', 'POST'])
 def my_products():
     db_sess = db_session.create_session()
-    products = db_sess.query(Product).filter(Product.user_id == current_user.id).all()
-    params = {'title': 'Мои объявления'}
+    search_phrase = request.args.get('q')
+    if search_phrase:
+        search_phrase = search_phrase.lower().strip()
+        products = db_sess.query(Product).filter(
+            ((Product.low_title.contains(search_phrase)) | (
+                Product.low_content.contains(search_phrase))),
+            (Product.user_id == current_user.id)).all()
+    else:
+        products = db_sess.query(Product).filter(Product.user_id == current_user.id).all()
+    products = sorted(products, key=lambda x: x.created_date, reverse=True)
+    params = {
+        'title': 'Мои объявления',
+        'can_edit': True
+    }
     if products:
         params['products'] = products
-        return render_template('my_products.html', **params)
+        return render_template('index.html', **params)
     else:
         return render_template('user_have_not_products.html', **params)
 

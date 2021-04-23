@@ -48,10 +48,6 @@ code {
     word-break: break-word;
 }
 
-.product-img {
-    overflow: hidden;
-}
-
 .default-img {
     object-fit: cover;
 }

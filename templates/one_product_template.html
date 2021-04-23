@@ -12,6 +12,14 @@
                 <span>{{ product.cost }}</span>
             </div>
         </div>
+        {% if product.user_id == current_user.id and can_edit %}
+        <div class="product-actions">
+          <div class="d-flex">
+            <a class="btn btn-warning" href="/edit_product/{{product.id}}">Редактировать</a>
+            <a class="btn btn-danger" href="/delete_product/{{product.id}}">Удалить</a>
+          </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -21,5 +21,12 @@ class Product(SqlAlchemyBase, SerializerMixin):
     contact_number = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime)
 
+    low_title = sqlalchemy.Column(sqlalchemy.String, nullable=True, index=True)
+    low_content = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+
     def __repr__(self):
         return f"<Product> {self.id} created {self.created_date}"
+
+    def reinitialized_indexes(self):
+        self.low_title = self.title.lower()
+        self.low_content = self.content.lower()
