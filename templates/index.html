@@ -1,27 +1,5 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="block_content">
-    <div class="tab-single">
-        <div class="row">
-            {% for product in products %}
-            <div class="product-container col-xl-3 col-lg-4 col-md-4 col-sm-4 col-12">
-                <div class="single-product">
-                    <div class="product-img">
-                        <a href="/product_details/{{ product.id }}">
-                            <img class="default-img" src="{{ product.path_to_img }}" alt="фотография">
-                        </a>
-                    </div>
-                    <div class="product-content">
-                        <h3><a href="/product_details/{{ product.id }}">{{ product.title }}</a></h3>
-                        <div class="product-price">
-                            <span>{{ product.cost }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
+    {% include 'products_grid.html' %}
 {% endblock %}

@@ -40,6 +40,8 @@ def main_page():
                     Product.content.contains(search_phrase))).all()
         else:
             products = db_sess.query(Product).all()
+
+        products = sorted(products, key=lambda x: x.created_date, reverse=True)
         params = {
             'title': 'Все объявления',
             'products': products
@@ -143,7 +145,7 @@ def delete_product(id):
         db_sess.commit()
     else:
         abort(403)
-    return redirect('/')
+    return redirect('/my_products')
 
 
 @app.route('/product_details/<int:id>', methods=['GET', 'POST'])
@@ -164,14 +166,12 @@ def product_details(id):
 def my_products():
     db_sess = db_session.create_session()
     products = db_sess.query(Product).filter(Product.user_id == current_user.id).all()
-    print(products)
+    params = {'title': 'Мои объявления'}
     if products:
-        params = {
-            'products': products
-        }
+        params['products'] = products
         return render_template('my_products.html', **params)
     else:
-        return abort(404)
+        return render_template('user_have_not_products.html', **params)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -229,9 +229,21 @@ def load_user(user_id):
 @app.errorhandler(404)
 def not_found(error):
     params = {
-        'title': 'Oops! Page not found...'
+        'title': 'Oops! Server ...',
+        'error_number': '404',
+        'error_message': 'Oops! The page you requested was not found.'
     }
-    return render_template('404_error.html', **params)
+    return render_template('error_template.html', **params)
+
+
+@app.errorhandler(500)
+def server_not_responded(error):
+    params = {
+        'title': 'Oops! Server ...',
+        'error_number': '500',
+        'error_message': 'Sorry, but our server is lying down to rest...'
+    }
+    return render_template('error_template.html', **params)
 
 
 @app.errorhandler(401)

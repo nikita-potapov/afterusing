@@ -1,0 +1,11 @@
+{% block products_grid %}
+<div class="block_content">
+    <div class="tab-single">
+        <div class="row">
+            {% for product in products %}
+                {% include 'one_product_template.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
