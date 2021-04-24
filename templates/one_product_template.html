@@ -9,11 +9,16 @@
         <div class="product-content">
             <h3 class="d-flex justify-content-center"><a href="/product_details/{{ product.id }}">{{ product.title }}</a></h3>
 
-            <div class="product-price d-flex justify-content-center">
-                <div class="d-flex flex-column">
-                    <span>{{ product.created_date.date() }}</span>
-                    <span>{{ product.cost }} руб.</span>
+            <div class="product-price">
+                <div class="d-flex justify-content-center">
+                    <div class="d-flex flex-column">
+                        <span>{{ product.created_date.date() }}</span>
+                        <div>
+                            {{ product.cost }} ₽
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
         {% if product.user_id == current_user.id and can_edit %}
