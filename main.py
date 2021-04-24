@@ -25,6 +25,23 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
+def save_image_and_get_path(req):
+    img_container = req.files['image']
+    filename = img_container.filename.replace(' ', '_')
+    saved_date_time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+    end_of_filename = '_'.join([saved_date_time, str(filename)])
+    hashing_str = str(current_user.id) + end_of_filename
+    temp = hashlib.sha1(hashing_str.encode('utf-8')).hexdigest() + '_' + end_of_filename
+    norm_path = os.path.normpath(PRODUCT_IMG_PATH)
+    temp = os.path.normpath(temp)
+    product_img_path = os.path.join(norm_path, temp)
+
+    img_container.save(product_img_path)
+    picture = Image.open(product_img_path)
+    picture.save(product_img_path, optimize=True, quality=30)
+    return '/' + product_img_path
+
+
 def main():
     db_session.global_init('db/database.db')
     port = int(os.environ.get("PORT", 80))
@@ -63,17 +80,7 @@ def add_product():
     if form.validate_on_submit():
 
         if form.image.data:
-            img_container = request.files['image']
-            filename = img_container.filename
-            saved_date_time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
-            end_of_filename = '_'.join([saved_date_time, str(filename)])
-            hashing_str = str(current_user.id) + end_of_filename
-            temp = hashlib.sha1(hashing_str.encode('utf-8')).hexdigest() + '_' + end_of_filename
-            product_img_path = os.path.join(PRODUCT_IMG_PATH, temp)
-
-            img_container.save(product_img_path)
-            picture = Image.open(product_img_path)
-            picture.save(product_img_path, optimize=True, quality=30)
+            product_img_path = save_image_and_get_path(request)
         else:
             product_img_path = None
 
@@ -105,9 +112,9 @@ def edit_product(id):
         product = db_sess.query(Product).filter(Product.id == id,
                                                 Product.user_id == current_user.id).first()
         if product:
-            form.cost.data = product.cost,
-            form.title.data = product.title,
-            form.content.data = product.content,
+            form.cost.data = product.cost
+            form.title.data = product.title
+            form.content.data = product.content
             form.contact_number.data = product.contact_number
 
         else:
@@ -121,22 +128,14 @@ def edit_product(id):
             product.title = form.title.data
             product.content = form.content.data
             if form.image.data:
-                img_container = request.files['image']
-                filename = img_container.filename
-                saved_date_time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
-                end_of_filename = '_'.join([saved_date_time, str(filename)])
-                hashing_str = str(current_user.id) + end_of_filename
-                temp = hashlib.sha1(hashing_str.encode('utf-8')).hexdigest() + '_' + end_of_filename
-                product_img_path = os.path.join(PRODUCT_IMG_PATH, temp)
-                img_container.save(product_img_path)
-                picture = Image.open(product_img_path)
-                picture.save(product_img_path, optimize=True, quality=10)
+                product_img_path = save_image_and_get_path(request)
+                product.path_to_img = product_img_path
 
             product.created_date = datetime.datetime.now()
 
             product.reinitialized_indexes()
             db_sess.commit()
-            return redirect('/')
+            return redirect('/my_products')
         else:
             abort(404)
     return render_template('add_product.html',
