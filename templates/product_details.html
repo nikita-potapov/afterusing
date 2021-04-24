@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="d-flex justify-content-center align-items-center" style="height: 96vh;">
-        <div class="inline-block align-middle d-flex flex-column" style="bottom: 0;">
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="inline-block align-middle d-flex flex-column">
             <div class="single-product">
                     <div class="product-img d-flex justify-content-center">
                         <a href="{{ request.referrer }}">
@@ -12,14 +12,18 @@
                     </div>
                 <div class="product-content">
                     <h3 class="d-flex justify-content-center">{{ product.title }}</h3>
-                    <h4 class="d-flex justify-content-center">{{ product.contact_number}}</h4>
                     <div class="product-price d-flex justify-content-center">
                         <h4>{{ product.cost }} руб.</h4>
                     </div>
+                    <hr>
+                    <h4 class="d-flex justify-content-center">{{ product.contact_number}}</h4>
+                    <hr>
                     <div class="d-flex justify-content-center">
                         {{ product.content }}
-
                     </div>
+                    <hr>
+                    <h6 class="d-flex justify-content-center">{{ product.created_date.date() }}</h6>
+                    <hr>
                 </div>
                 {% if product.user_id == current_user.id %}
                 <div class="product-actions d-flex justify-content-around">

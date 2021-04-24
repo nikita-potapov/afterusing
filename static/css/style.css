@@ -36,13 +36,9 @@ body > .container {
     height: 100%;
 }
 
-.footer > .container {
+footer > .container {
   padding-right: 15px;
   padding-left: 15px;
-}
-
-code {
-  font-size: 80%;
 }
 
 .product-container {

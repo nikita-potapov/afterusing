@@ -60,6 +60,9 @@ def main_page():
         else:
             products = db_sess.query(Product).all()
 
+        if not products:
+            return render_template('no_products.html')
+
         products = sorted(products, key=lambda x: x.created_date, reverse=True)
         for i in range(len(products)):
             if products[i].path_to_img is None:
