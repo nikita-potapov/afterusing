@@ -58,7 +58,8 @@ def main_page():
                 (Product.low_title.contains(search_phrase)) | (
                     Product.low_content.contains(search_phrase))).all()
         else:
-            products = db_sess.query(Product).all()
+            products = db_sess.query(Product).filter(
+                Product.is_showing_by_user == True, Product.is_showing_by_admin == True).all()
 
         if not products:
             return render_template('no_products.html')
@@ -86,14 +87,13 @@ def products_moderation():
     products = db_sess.query(Product).filter(Product.is_showing_by_admin == False).all()
 
     params = {
-        'title': 'Products moderation',
+        'title': 'Модерирование',
         'admin_db_id': admin_db_id
     }
     if products:
         products = sorted(products, key=lambda x: x.created_date, reverse=True)
         params['products'] = products
-        params['moderation'] = True
-        return render_template('index.html', **params)
+        return render_template('products_moderation.html', **params)
 
     else:
         params['message'] = 'Нет новых объявлений'
@@ -138,33 +138,49 @@ def edit_product(id):
     form = AddProductForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
-        product = db_sess.query(Product).filter(Product.id == id,
-                                                Product.user_id == current_user.id).first()
+        product = db_sess.query(Product).filter(Product.id == id).first()
+        if product.user_id != current_user.id:
+            if current_user.id != admin_db_id:
+                product = None
+
         if product:
             form.cost.data = product.cost
             form.title.data = product.title
             form.content.data = product.content
             form.contact_number.data = product.contact_number
             form.is_showing_by_user.data = product.is_showing_by_user
-            form.is_showing_by_admin.data = product.is_showing_by_admin
+            if current_user.id == admin_db_id:
+                form.is_showing_by_admin.data = product.is_showing_by_admin
 
         else:
             abort(404)
+
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        product = db_sess.query(Product).filter(Product.id == id,
-                                                Product.user_id == current_user.id).first()
+        product = db_sess.query(Product).filter(Product.id == id).first()
+        if product.user_id != current_user.id:
+            if current_user.id != admin_db_id:
+                product = None
+
         if product:
+            if any([product.cost != form.cost.data,
+                    product.title != form.title.data,
+                    product.content != form.content.data,
+                    form.image.data]):
+                product.is_showing_by_admin = False
+
             product.cost = form.cost.data
             product.title = form.title.data
             product.content = form.content.data
             if form.image.data:
                 product_img_path = save_image_and_get_path(request)
                 product.path_to_img = product_img_path
+                product.img_hash_sum = hash(form.image.data)
 
             product.created_date = datetime.datetime.now()
             product.is_showing_by_user = form.is_showing_by_user.data
-            product.is_showing_by_admin = form.is_showing_by_admin.data
+            if current_user.id == admin_db_id:
+                product.is_showing_by_admin = form.is_showing_by_admin.data
 
             product.reinitialized_indexes()
             db_sess.commit()
@@ -173,16 +189,18 @@ def edit_product(id):
             abort(404)
     return render_template('add_product.html',
                            title='Редактирование объявления',
-                           form=form
-                           )
+                           form=form, admin_db_id=admin_db_id)
 
 
 @app.route('/delete_product/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_product(id):
     db_sess = db_session.create_session()
-    product = db_sess.query(Product).filter(Product.id == id,
-                                            Product.user_id == current_user.id).first()
+    product = db_sess.query(Product).filter(Product.id == id).first()
+    if product.user_id != current_user.id:
+        if current_user.id != admin_db_id:
+            product = None
+
     if product:
         if product.path_to_img:
             try:
@@ -230,12 +248,11 @@ def my_products():
             products[i].path_to_img = os.path.join(PRODUCT_IMG_PATH, 'no_photo.png')
     params = {
         'title': 'Мои объявления',
-        'can_edit': True,
         'admin_db_id': admin_db_id
     }
     if products:
         params['products'] = products
-        return render_template('index.html', **params)
+        return render_template('my_products.html', **params)
     else:
         return render_template('user_have_not_products.html', **params)
 
@@ -256,6 +273,7 @@ def register():
         user = User(
             name=form.name.data,
             email=form.email.data,
+            modified_date=datetime.datetime.now()
         )
         user.set_password(form.password.data)
         db_sess.add(user)
@@ -272,6 +290,8 @@ def login():
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
+            if current_user.id == admin_db_id:
+                return redirect('/products_moderation')
             return redirect("/")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
@@ -297,7 +317,8 @@ def not_found(error):
     params = {
         'title': 'Oops! Server ...',
         'error_number': '404',
-        'error_message': 'Oops! The page you requested was not found.'
+        'error_message': 'Oops! The page you requested was not found.',
+        'admin_db_id': admin_db_id
     }
     return render_template('error_template.html', **params)
 
@@ -307,7 +328,8 @@ def server_not_responded(error):
     params = {
         'title': 'Oops! Server ...',
         'error_number': '500',
-        'error_message': 'Sorry, but our server is lying down to rest...'
+        'error_message': 'Sorry, but our server is lying down to rest...',
+        'admin_db_id': admin_db_id
     }
     return render_template('error_template.html', **params)
 

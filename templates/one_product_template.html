@@ -20,7 +20,7 @@
                 </div>
             </div>
         </div>
-        {% if (product.user_id == current_user.id and can_edit) or (moderation == True and current_user.id == admin_db_id) %}
+        {% if current_user.id == product.user_id and can_edit == True %}
         <div class="product-actions d-flex justify-content-around">
           <div class="d-flex">
               <a class="btn btn-danger" href="/delete_product/{{product.id}}">Удалить</a>

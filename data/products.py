@@ -14,6 +14,7 @@ class Product(SqlAlchemyBase, SerializerMixin):
     user = orm.relation('User')
 
     path_to_img = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    img_hash_sum = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     cost = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=True, index=True)
