@@ -11,7 +11,9 @@ from flask_restful import Api
 
 from data import db_session
 from data.products import Product
+from data.products_resource import ProductsListResource, ProductsResource
 from data.users import User
+from data.users_resource import UsersListResource, UsersResource
 from forms.product import AddProductForm
 from forms.user import RegisterForm, LoginForm
 
@@ -43,6 +45,14 @@ def save_image_and_get_path(req):
 
 
 def main():
+    # для списка объектов
+    api.add_resource(ProductsListResource, '/api/products')
+    api.add_resource(UsersListResource, '/api/users')
+
+    # для одного объекта
+    api.add_resource(ProductsResource, '/api/products/<int:product_id>')
+    api.add_resource(UsersResource, '/api/users/<int:user_id>')
+
     db_session.global_init('db/database.db')
     port = int(os.environ.get("PORT", 80))
     app.run(host='0.0.0.0', port=port)
