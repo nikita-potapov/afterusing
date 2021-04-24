@@ -21,6 +21,9 @@ class Product(SqlAlchemyBase, SerializerMixin):
     contact_number = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime)
 
+    is_showing_by_user = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+    is_showing_by_admin = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
+
     low_title = sqlalchemy.Column(sqlalchemy.String, nullable=True, index=True)
     low_content = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 

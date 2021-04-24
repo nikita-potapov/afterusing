@@ -51,6 +51,10 @@
                           </a>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                             <a class="dropdown-item" href="/my_products">Мои объявления</a>
+                            {% if current_user.id == admin_db_id %}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/products_moderation">Модерирование</a>
+                            {% endif %}
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/logout">Выйти</a>
                           </div>

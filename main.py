@@ -70,10 +70,34 @@ def main_page():
         params = {
             'title': 'Все объявления',
             'products': products,
+            'admin_db_id': admin_db_id
         }
         return render_template('index.html', **params)
     elif request.method == 'POST':
         return 'POST METHOD'
+
+
+@app.route('/products_moderation', methods=['GET', 'POST'])
+@login_required
+def products_moderation():
+    if current_user.id != admin_db_id:
+        return abort(404)
+    db_sess = db_session.create_session()
+    products = db_sess.query(Product).filter(Product.is_showing_by_admin == False).all()
+
+    params = {
+        'title': 'Products moderation',
+        'admin_db_id': admin_db_id
+    }
+    if products:
+        products = sorted(products, key=lambda x: x.created_date, reverse=True)
+        params['products'] = products
+        params['moderation'] = True
+        return render_template('index.html', **params)
+
+    else:
+        params['message'] = 'Нет новых объявлений'
+        return render_template('message_page.html', **params)
 
 
 @app.route('/add_product', methods=['GET', 'POST'])
@@ -95,7 +119,9 @@ def add_product():
             content=form.content.data,
             created_date=datetime.datetime.now(),
             path_to_img=product_img_path,
-            contact_number=form.contact_number.data
+            contact_number=form.contact_number.data,
+            is_showing_by_user=form.is_showing_by_user.data,
+            is_showing_by_admin=form.is_showing_by_admin.data,
         )
         product.reinitialized_indexes()
         db_sess.add(product)
@@ -119,6 +145,8 @@ def edit_product(id):
             form.title.data = product.title
             form.content.data = product.content
             form.contact_number.data = product.contact_number
+            form.is_showing_by_user.data = product.is_showing_by_user
+            form.is_showing_by_admin.data = product.is_showing_by_admin
 
         else:
             abort(404)
@@ -135,6 +163,8 @@ def edit_product(id):
                 product.path_to_img = product_img_path
 
             product.created_date = datetime.datetime.now()
+            product.is_showing_by_user = form.is_showing_by_user.data
+            product.is_showing_by_admin = form.is_showing_by_admin.data
 
             product.reinitialized_indexes()
             db_sess.commit()
@@ -173,7 +203,8 @@ def product_details(id):
     if product:
         params = {
             'title': product.title,
-            'product': product
+            'product': product,
+            'admin_db_id': admin_db_id
         }
         return render_template('product_details.html', **params)
     else:
@@ -199,7 +230,8 @@ def my_products():
             products[i].path_to_img = os.path.join(PRODUCT_IMG_PATH, 'no_photo.png')
     params = {
         'title': 'Мои объявления',
-        'can_edit': True
+        'can_edit': True,
+        'admin_db_id': admin_db_id
     }
     if products:
         params['products'] = products

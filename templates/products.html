@@ -7,11 +7,12 @@
         </div>
         <div class="products_container">
             {% for product in products %}
+            {% if product.is_showing_by_user == True and product.is_showing_by_admin == True %}
             <div class="product_container">
                 <div class="product_table">
 
                 </div>
-                {% if current_user.is_authenticated and current_user.id == product.user_id %}
+                {% if current_user.is_authenticated and (current_user.id == product.user_id or current_user.id == admin_db_id) %}
                     <div>
                         <a href="/edit_product/{{ product.id }}" class="btn btn-warning">
                             Изменить
@@ -22,6 +23,7 @@
                     </div>
                 {% endif %}
             </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>

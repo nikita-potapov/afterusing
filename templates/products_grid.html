@@ -3,7 +3,9 @@
     <div class="tab-single">
         <div class="row">
             {% for product in products %}
+            {% if product.is_showing_by_user == True and product.is_showing_by_admin == True or product.user_id == current_user.id or moderation == True %}
                 {% include 'one_product_template.html' %}
+            {% endif %}
             {% endfor %}
         </div>
     </div>

@@ -25,7 +25,7 @@
                     <h6 class="d-flex justify-content-center">{{ product.created_date.date() }}</h6>
                     <hr>
                 </div>
-                {% if product.user_id == current_user.id %}
+                {% if product.user_id == current_user.id or current_user.id == admin_db_id %}
                 <div class="product-actions d-flex justify-content-around">
                   <div class="d-flex">
                       <a class="btn btn-danger" href="/delete_product/{{product.id}}">Удалить</a>

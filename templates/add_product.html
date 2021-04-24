@@ -41,6 +41,26 @@
         {% endfor %}
     </p>
     <p>
+        {{ form.is_showing_by_user.label }}<br>
+        {{ form.is_showing_by_user(class="form-control") }}<br>
+        {% for error in form.is_showing_by_user.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    {% if current_user.id == admin_db_id %}
+    <p>
+        {{ form.is_showing_by_admin.label }}<br>
+        {{ form.is_showing_by_admin(class="form-control") }}<br>
+        {% for error in form.is_showing_by_admin.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    {% endif %}
+    <p>
         {{ form.image.label }}<br>
         {{ form.image(class="form-control-file") }}<br>
         {% for error in form.image.errors %}
