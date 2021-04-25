@@ -3,7 +3,12 @@
     <div class="single-product">
         <div class="product-img d-flex justify-content-center">
             <a href="/product_details/{{ product.id }}">
-                <img class="default-img" src="{{ product.path_to_img }}" alt="фотография">
+                {% if product.path_to_img != None %}
+                    <img class="default-img" src="{{ product.path_to_img }}" alt="фотография">
+                {% else %}
+                    <img class="default-img" src="static/img/product_imgs/no_photo.png" alt="фотография">
+                {% endif %}
+
             </a>
         </div>
         <div class="product-content">
