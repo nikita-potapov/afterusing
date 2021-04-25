@@ -71,18 +71,21 @@ def main_page():
             products = db_sess.query(Product).filter(
                 Product.is_showing_by_user == True, Product.is_showing_by_admin == True).all()
 
+        params = {
+            'title': 'Все объявления',
+            'admin_db_id': admin_db_id
+        }
+
         if not products:
-            return render_template('no_products.html')
+            return render_template('no_products.html', **params)
 
         products = sorted(products, key=lambda x: x.created_date, reverse=True)
         for i in range(len(products)):
             if products[i].path_to_img is None:
                 products[i].path_to_img = os.path.join(PRODUCT_IMG_PATH, 'no_photo.png')
-        params = {
-            'title': 'Все объявления',
-            'products': products,
-            'admin_db_id': admin_db_id
-        }
+
+        params['products'] = products
+
         return render_template('index.html', **params)
     elif request.method == 'POST':
         return 'POST METHOD'
